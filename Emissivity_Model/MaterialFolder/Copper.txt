@@ -1,0 +1,11 @@
+# ------------- Copper  ----------- #
+Name: Copper
+Z: 29				    # Atomic Number
+Am: 63.546    			    # Atomic Mass
+Density: 8.96       		    # [g/cm3] Density
+MeltingPoint: 1357		    # [K]
+WorkFunction: 4.7   		    # [eV]
+Emissivity: 1.0			    #  
+SpecificHeat: 0.3765		    # [J/gK]
+Conductivity: 401      	            # [W/mK]
+Resistivity: 1.725e-8                  # [Ohm m]
