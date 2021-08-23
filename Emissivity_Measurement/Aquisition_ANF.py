@@ -11,8 +11,8 @@ AdqRate = 1000                          # Adquisition Rate. Max. (1 Ac/100 us)
 
 Flag_MeasureADCZero = "Yes"
 Flag_MeasureR0 = "No,300"                    # [mA] Ojo, max 300 mA
-Flag_MeasureR = "Yes,14"                        # Current Already set in by source.
-OutputFolderName = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try2/"
+Flag_MeasureR = "Yes,21"                        # Current Already set in by source.
+OutputFolderName = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/"
 
 import os
 os.chdir(os.path.dirname(os.getcwd()))
