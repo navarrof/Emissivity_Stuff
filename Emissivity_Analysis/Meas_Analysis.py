@@ -3,6 +3,9 @@ import glob
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
+def Func(t,a,b):
+    y = a*(1-np.exp(-t/(b)))
+    return y
 
 def readMeas(filename, AdcRate):
     f = open(filename,"r")
@@ -27,7 +30,6 @@ def readMeas(filename, AdcRate):
     
 def PlotAllFiles(AdcRate):
     namevec = glob.glob("Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/R0*")
-    n = int(len(namevec)/2.0)+1
 
     Vec_Start = 300*np.array(range(len(namevec)))**0.0
     Vec_End = 300*np.array(range(len(namevec)))**0.0
@@ -35,39 +37,64 @@ def PlotAllFiles(AdcRate):
     fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(10,8))
 
 
-    for k in range(0,12):
+    for k in range(0,1):
         Time, V,I,R,T1,T2 = readMeas(namevec[k], AdcRate)
-        axs.plot(np.array(Time)*1e-3,I)
+        popt, pcov = curve_fit(Func, Time, I)
+
+        print()
+        print(namevec[k])
+        print("I_st: " + str(popt[0])+" [A]     Tao: "+str(popt[1])+" [ms]")
+        print()
+
+        axs.plot(np.array(Time),I,color="green")
+        axs.plot(np.array(Time),Func(np.array(Time),*popt),linestyle="dashed")
+        axs.plot(np.array(Time),R)
+        
 
     axs.set_ylabel("Intensity [A]",fontsize=14)
     axs.set_xlabel("Time [s]",fontsize=14)
-    axs.set_title("R0 Measurement")
+
     plt.show()
 
+def PlotExpectedIntensity(AdcRate,filename):
+    import matplotlib as mpl
 
-def Fit_CurveToData(filename,AdcRate):
-    def Func(t,a,b):
-        y = a*(1-np.exp(-t/(b)))
-        return y
+    mpl.rcParams['axes.spines.right'] = False
+    mpl.rcParams['axes.spines.top'] = False
 
+    plt.figure(figsize=(6,4))
+    Time, V,I,R,T1,T2 = readMeas(filename, AdcRate)
+    popt, pcov = curve_fit(Func, Time, I)
+    print()
+    print("I_st: " + str(popt[0])+" [A]     Tao: "+str(popt[1])+" [ms]")
+    print()
+
+    
+    plt.plot(Time, np.array(I),lw=2,marker="s",ms=5,color="forestgreen",label="Measured I = 0.797 [A]")
+    plt.hlines( y = 0.8, xmin = 5000, xmax = Time[-1],lw=2,color='black',label="Expected I = 0.800 [A]")
+    plt.vlines(x = 5000, ymin=0.0,ymax=0.8,lw=2,color='black')
+    #plt.xlim(-5,40)
+    plt.legend(fontsize=14,loc='lower right')
+    plt.ylabel("Intensity [a]",fontsize=14)
+    plt.xlabel("Time [ms]",fontsize=14)
+    plt.xticks(fontsize=14); plt.yticks(fontsize=14)
+    
+    
+    plt.show()
+
+def PlotR0Example(filename,AdcRate):
     Time, V,I,R,T1,T2 = readMeas(filename, AdcRate)
     popt, pcov = curve_fit(Func, Time, I)
 
-    plt.figure()
-    plt.plot(Time,I,color="green")
-    plt.plot(np.array(Time),Func(np.array(Time), *popt))
+    plt.plot(Time, R, color="firebrick",marker="s",ms=5)
+    plt.ylabel("Resistence [Ohm]",fontsize=14)
+    plt.xlabel("Time [ms]",fontsize=14)
+    plt.xticks(fontsize=14); plt.yticks(fontsize=14)
+    #plt.xlim(-5,40)
 
     plt.show()
 
-    
 
-
-
-
-
-
-
-    return 0
 
 # ------------------------- MAIN ------------------------ #
 
@@ -75,5 +102,7 @@ AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-filename = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/R0Meas_100.0mA.txt"
-Fit_CurveToData(filename,AdcRate)
+filename = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/RMeas10.txt"
+#PlotExpectedIntensity(AdcRate,filename)
+
+#PlotR0Example(filename,AdcRate)
