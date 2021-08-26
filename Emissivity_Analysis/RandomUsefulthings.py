@@ -10,6 +10,9 @@ def Read_ResT(filename):
             
     return T, Res
 def Plot_TRes(filename):
+    import matplotlib as mpl
+    mpl.rcParams['axes.spines.right'] = False
+    mpl.rcParams['axes.spines.top'] = False
     fig, axs = plt.subplots(1,2,constrained_layout = True, figsize=(10,4))
     T, Res = Read_ResT(filename)
     
@@ -22,22 +25,29 @@ def Plot_TRes(filename):
         polw += [w[0]*T[k]**2+w[1]*T[k]+w[2]]
         axs[0].errorbar(T[k],Res[k],marker="s",mfc="blue",mec="blue",ms=5,lw=3,c="blue")
         axs[1].errorbar(T[k],Res[k]/Res[0],marker="s",mfc="blue",mec="blue",ms=5,lw=3,c="blue")
+    
 
     axs[0].plot(T,polz,color="grey",lw=3,ls="dashed")
     axs[1].plot(T,polw,color="grey",lw=3,ls="dashed")
+    axs[0].xaxis.set_tick_params(labelsize=14)
+    axs[0].yaxis.set_tick_params(labelsize=14)
+    axs[1].xaxis.set_tick_params(labelsize=14)
+    axs[1].yaxis.set_tick_params(labelsize=14)
+
 
     axs[0].set_ylabel("Resistivity [Ohm m]",fontsize=14)
     axs[0].set_xlabel("Temperature [K]",fontsize=14)
     axs[1].set_ylabel("Res/Res0",fontsize=14)
     axs[1].set_xlabel("Temperature [K]",fontsize=14)
+
     fig.suptitle("Literature: R vs T",fontsize=14)
 
-    textstr0 = str('{:0.3e}'.format(z[0]))+" T^2 + "+str('{:0.3e}'.format(z[1]))+" T + "+str('{:0.3e}'.format(z[2]))
-    textstr1 = str('{:0.3e}'.format(w[0]))+" T^2 + "+str('{:0.3e}'.format(w[1]))+" T + "+str('{:0.3e}'.format(w[2]))
-    axs[0].text(0.05, 0.95, textstr0, transform=axs[0].transAxes, fontsize=14,
-        verticalalignment='top')
-    axs[1].text(0.05, 0.95, textstr1, transform=axs[1].transAxes, fontsize=14,
-        verticalalignment='top')
+    textstr0 = str('{:0.3e}'.format(z[0]))+r" $T^2 + $"+str('{:0.3e}'.format(z[1]))+" T + "+str('{:0.3e}'.format(z[2]))
+    textstr1 = str('{:0.3e}'.format(w[0]))+r" $ T^2 + $"+str('{:0.3e}'.format(w[1]))+" T + "+str('{:0.3e}'.format(w[2]))
+    axs[0].text(0.05, 0.95, textstr0, transform=axs[0].transAxes,
+        verticalalignment='top',fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[1].text(0.05, 0.95, textstr1, transform=axs[1].transAxes,
+        verticalalignment='top',fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
 
     plt.show()
 
@@ -74,8 +84,8 @@ def Plot_IntensityTemperature(filename):
     plt.show()
 
 # -------------------------------- MAIN ------------------------- #
-#filename = "Emissivity_Analysis/Copper_Res(T).txt"
-#Plot_TRes(filename)
+filename = "Emissivity_Analysis/Tungsten_Res(T).txt"
+Plot_TRes(filename)
 
-filename = "Emissivity_Measurement/LittleResults/Copper_IR.txt"
-Plot_IntensityTemperature(filename)
+#filename = "Emissivity_Measurement/LittleResults/Copper_IR.txt"
+#Plot_IntensityTemperature(filename)
