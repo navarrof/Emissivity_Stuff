@@ -10,8 +10,8 @@ from FunctionsFolder import NecesaryFunctions as nf
 AdqRate = 1000                          # Adquisition Rate. Max. (1 Ac/100 us)
 
 Flag_MeasureADCZero = "Yes"
-Flag_MeasureR0 = "Yes,40"                    # [mA] Ojo, max 300 mA
-Flag_MeasureR = "No,900"                        # Current Already set in by source.
+Flag_MeasureR0 = "No,310"                    # [mA] Ojo, max 300 mA
+Flag_MeasureR = "Yes,1500"                        # Current Already set in by source.
 OutputFolderName = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/"
 
 import os
@@ -43,7 +43,7 @@ nf.setADCRate(ser,AdqRate)
 
 # ------------------------------- Measure Zero Current State ----------------------------- #
 
-nf.setVoffset(0,1000,ser)
+nf.setVoffset(0,100,ser)
 
 if Flag_MeasureADCZero == "Yes":
     Vzero, Izero = nf.MeasureADCZero(ser,OutputFolderName)

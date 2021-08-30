@@ -37,8 +37,8 @@ def Plot_Meas(Time,V,I,R,T1,T2):
     axs[0].plot(Time,V,linewidth=2,color="royalblue",label="V  = "+str(round(Av_V,4))+" [v]")
     axs[0].plot(Time,I,linewidth=2, color = "forestgreen",label="I = "+str(round(Av_I,4))+" [A]")
     axs[0].plot(Time,R,linewidth=2, color = "orchid",label = "R = "+str(round(Av_R,4))+" [Ohm]")
-    axs[0].axvline(x=ss1,linewidth=2,color = "grey", linestyle="dashed")
-    axs[0].axvline(x=ss2,linewidth=2,color = "grey", linestyle="dashed", label = "ss Window")
+    #axs[0].axvline(x=ss1,linewidth=2,color = "grey", linestyle="dashed")
+    #axs[0].axvline(x=ss2,linewidth=2,color = "grey", linestyle="dashed", label = "ss Window")
     axs[0].set_xlabel("Time [ms]",fontsize = 14)
 
     axs[0].legend(loc=1)
@@ -84,7 +84,7 @@ def Plot_MeasCompa(filename1,filename2):
 # -------------------------------------------------------- #
 ## Simple Data visualization. 
 AdcRate=1
-Time, V,I,R,T1,T2 = readMeas("Emissivity_Measurement/OutputFiles/TungstenOxided_NoVacuum/RMeas900.txt", AdcRate)
+Time, V,I,R,T1,T2 = readMeas("Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/RMeas1500.txt", AdcRate)
 Av_I, St_I, Av_V, St_V, Av_R , St_R = Plot_Meas(Time,V,I,R,T1,T2); plt.show()
 
 # -------------------------------------------------------- #

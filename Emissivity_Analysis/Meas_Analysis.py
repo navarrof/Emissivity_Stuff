@@ -101,16 +101,16 @@ def FitResistance(time,r):
 
     tt, rr, yfit = [], [], []; start = 0; end = 0
     for i in range(0,len(r)):
-        if (r[i] > 0.02) and (start == 0): 
-            asd = r[i]; start = i; s2 = int(start+10)
+        if (r[i] > 0.5) and (start == 0): 
+            asd = r[i]; start = i; s2 = int(start+5)
             rr += [r[i]-np.mean(r[start:s2])]; tt += [time[i]-time[start]]
-        elif (r[i] > 0.02):
+        elif (r[i] > 0.5):
             s2 = int(start+5)
             rr += [r[i]-np.mean(r[start:s2])]; tt += [time[i]-time[start]]
         elif (start != 0) and (end == 0): end = i
     if end == 0: end = i
 
-    popt, pcov = curve_fit(Func, tt, rr,bounds=([0.0,0.0],[1.0,5]))
+    popt, pcov = curve_fit(Func, tt, rr,bounds=([0.0,0.0],[3.0,5.0]))
 
     for k in range(0,len(tt)):
         yfit += [Func(tt[k],*popt)]
@@ -156,18 +156,19 @@ def Plot_SummaryResult(filename, AdcRate):
     if len(filename.split("R0")) > 1: 
         Ixstart = int(Time[start]+500); Ixend = int(Time[end] - 1)
         Imean = np.mean(I[Ixstart:Ixend])
-        Vxstart = int(Time[start]+500); Vxend = int(Time[end]-1)
+        Vxstart = int(Time[start]+1800); Vxend = int(Time[end]-1)
         Vmean = np.mean(V[Vxstart:Vxend])
         Rxstart = int(Time[start]+1500); Rxend = int(Time[end] - 1)
         Rmean = np.mean(R[Rxstart:Rxend])
     else:
-        Ixstart = int(Time[start]+4000); Ixend = int(Time[end] - 1000)
+        print(start,end)
+        Ixstart = int(Time[start]+10000); Ixend = int(Time[end] - 1000)
         Imean = np.mean(I[Ixstart:Ixend])
-        Vxstart = int(Time[start]+4000); Vxend = int(Time[end]-1000)
+        Vxstart = int(Time[start]+10000); Vxend = int(Time[end]-1000)
         Vmean = np.mean(V[Vxstart:Vxend])
-        Rxstart = int(Time[start]+4000); Rxend = int(Time[end] - 1000)
+        Rxstart = int(Time[start]+10000); Rxend = int(Time[end] - 1000)
         Rmean = np.mean(R[Rxstart:Rxend])
-
+    
     axs[0][0].plot(Time,I, color="forestgreen",ls="None",marker=".")
     axs[0][0].axvline(x=Ixstart, lw=2, ls="dashed", color="gray")
     axs[0][0].axvline(x=Ixend, lw=2, ls="dashed", color="gray")
@@ -175,10 +176,10 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[0][0].set_ylabel("Intensity [A]",fontsize=14)
     axs[0][0].xaxis.set_tick_params(labelsize=14)
     axs[0][0].yaxis.set_tick_params(labelsize=14)
+    
     axs[0][0].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
     axs[0][0].set_ylim(bottom=-0.1, top=np.max(I)+0.2)
-    axs[0][0].text(2000,0.2,r"$I_{mean} = $"+str(round(Imean,4))+" [A]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
-
+    axs[0][0].text(20000,0.2,r"$I_{mean} = $"+str(round(Imean,4))+" [A]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
     axs[0][1].plot(Time,V, color = "royalblue",ls="None",marker=".")
     axs[0][1].axvline(x=Vxstart, lw=2, ls="dashed", color="gray")
     axs[0][1].axvline(x=Vxend, lw=2, ls="dashed", color="gray")
@@ -188,7 +189,7 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[0][1].yaxis.set_tick_params(labelsize=14)
     axs[0][1].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
     axs[0][1].set_ylim(bottom=-0.1, top=np.max(V)+0.2)
-    axs[0][1].text(2000,0.2,r"$V_{mean} = $"+str(round(Vmean,4))+" [V]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[0][1].text(20000,0.2,r"$V_{mean} = $"+str(round(Vmean,4))+" [V]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
 
     axs[1][0].plot(Time,R, color = "firebrick",ls="None",marker=".")
     axs[1][0].axvline(x=Rxstart, lw=2, ls="dashed", color="gray")
@@ -199,7 +200,7 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[1][0].yaxis.set_tick_params(labelsize=14)
     axs[1][0].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
     axs[1][0].set_ylim(bottom=-0.1, top=np.max(R)+0.2)
-    axs[1][0].text(2000,3,r"$R_{mean} = $"+str(round(Rmean,4))+r"$[ \Omega ]$",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[1][0].text(20000,0,r"$R_{mean} = $"+str(round(Rmean,4))+r"$[ \Omega ]$",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
     
 
     axs[1][1].plot(XX_1,RR_1,color="indianred",ls="None",marker=".")
@@ -211,7 +212,8 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[1][1].set_xlim(left=Time[start],right=Rxstart)
     axs[1][1].set_ylim(bottom=-0.1,top=np.max(RR_1)+0.02)
     text1 = r'$ \Delta R (t) = ' +str(round(par_1[0],4)) +r'\cdot \left( 1 - exp\left(- '+str(round(par_1[1],4)) +r'\cdot t\right) \right)$'
-    axs[1][1].text(200,np.max(RR_1)+0.02,text1,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[1][1].text(4800,0.0,text1,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+
     plt.savefig(filename.split(".")[0]+".png")
     plt.show()
     print(filename.split(".")[0]+".png")
@@ -222,6 +224,7 @@ def ReadFolderSummary(filesumary):
     vName, vIe, vIm, vVm, vRm, va, vb = [],[],[],[],[],[],[]
     for cont,l in enumerate(f,start=0):
         asd = l.split(" ")
+        print(asd)
         if cont > 1: 
             if asd[10] == "-": continue
 
@@ -304,14 +307,14 @@ def Plot_TrickedR(filesumary):
     fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(10,7))
     vI2, vR2 = [], []
     for k in range(0,len(vIe)):
-        if (vIm[k] > 0.2) and (vIm[k] < 0.85):
+        if (vIm[k] > 0.34) and (vIm[k] < 1.45):
             vI2 += [vIm[k]]; vR2 += [vRm[k]]
 
     #p = np.polyfit(vI2,vR2,3); 
     #print(p[0],p[1],p[2],p[3])
     #fFunc = p[3]*np.array(vI2)**0+p[2]*np.array(vI2)**1+p[1]*np.array(vI2)**2+p[0]*np.array(vI2)**3
 
-    popt, pcov = curve_fit(Func_R, vI2[:11], vR2[:11])
+    popt, pcov = curve_fit(Func_R, vI2[:10], vR2[:10])
     print(popt)
     fFunc = Func_R(np.array(vI2),*popt)
 
@@ -320,7 +323,7 @@ def Plot_TrickedR(filesumary):
     #text = "R = "+str(round(p[3],3))+"  +"+str(round(p[2],3))+r"$\cdot I  +$"+str(round(p[1],3))+r"$\cdot I^2$   +"+str(round(p[0],3))+r"$ \cdot I^3$"
     #axs.text(vI2[0],vR2[-2],text,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
     text = "R = "+str(round(popt[0],3))+"  + "+str(round(popt[1],3))+r"$\cdot I^2$"
-    axs.text(vI2[0],1.68,text,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs.text(vI2[0],1.4,text,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
 
     axs.set_xlabel('I [A]',fontsize=14)
     axs.set_ylabel(r"$R/R_0$",fontsize=14)
@@ -343,7 +346,7 @@ def Plot_MeasuredResistanceIntensity(filesumary):
     vName, vIe, vIm, vVm, vRm, va,vb = ReadFolderSummary(filesumary)
     vI2, vR2 = [], []
     for k in range(0,len(vIe)):
-        if (vIm[k] > 0.2) and (vIm[k] < 0.85):
+        if (vIm[k] > 0.34) and (vIm[k] < 1.4):
             vI2 += [vIm[k]]; vR2 += [vRm[k]]
     popt, pcov = curve_fit(Func_R, vI2[:11], vR2[:11])
     print(popt)
@@ -384,7 +387,7 @@ AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-filename = "Emissivity_Measurement/OutputFiles/TungstenOxided_NoVacuum/R0Meas_80.0mA.txt"
+#filename = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/RMeas1250.txt"
 #PlotExpectedIntensity(AdcRate,filename)
 #PlotR0Example(filename,AdcRate)
 
@@ -396,10 +399,10 @@ filename = "Emissivity_Measurement/OutputFiles/TungstenOxided_NoVacuum/R0Meas_80
 
 #PlotAllFiles(AdcRate)
 
-Plot_SummaryResult(filename,AdcRate)
+#Plot_SummaryResult(filename,AdcRate)
 
-#filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/SummaryResults.txt"
+filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/SummaryResults.txt"
 #Plot_FolderSummary(filesumari)
 #Plot_TrickedR(filesumari)
 
-#Plot_MeasuredResistanceIntensity(filesumari)
+Plot_MeasuredResistanceIntensity(filesumari)

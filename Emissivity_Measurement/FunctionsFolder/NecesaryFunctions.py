@@ -172,7 +172,7 @@ def ReadMesage(Vzero,Izero,ser):
     return V, I, R, temperature1, temperature2
 
 def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
-    Nmeas_SP1 = 5000; Nmeas_P1P0 = 50000; Nmeas_P0s = 10000
+    Nmeas_SP1 = 100; Nmeas_P1P0 = 500; Nmeas_P0s = 100
     vec_I, vec_V, vec_R, vec_T1, vec_T2 = [],[],[],[],[]
 
     print("    Measurement ON current OFF     ")
