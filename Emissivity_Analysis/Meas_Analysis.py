@@ -15,7 +15,7 @@ def readMeas(filename, AdcRate):
     for count,l in enumerate(f, start=0):
         if count > 1:
             asd = l.split(" ")
-            voltage = float(asd[13]); intensity = float(asd[27])
+            voltage = float(asd[13])*2.0; intensity = float(asd[27])
             if (intensity > 0.1e-2) and (voltage > 0.0):
                 R += [float(asd[32])]
             else:
@@ -296,13 +296,95 @@ def Plot_FolderSummary(filesumary):
 
     plt.show()
 
+def Func_R(x,R0,A):
+    return R0 + A*x**2
+
+def Plot_TrickedR(filesumary):
+    vName, vIe, vIm, vVm, vRm, va,vb = ReadFolderSummary(filesumary)
+    fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(10,7))
+    vI2, vR2 = [], []
+    for k in range(0,len(vIe)):
+        if (vIm[k] > 0.2) and (vIm[k] < 0.85):
+            vI2 += [vIm[k]]; vR2 += [vRm[k]]
+
+    #p = np.polyfit(vI2,vR2,3); 
+    #print(p[0],p[1],p[2],p[3])
+    #fFunc = p[3]*np.array(vI2)**0+p[2]*np.array(vI2)**1+p[1]*np.array(vI2)**2+p[0]*np.array(vI2)**3
+
+    popt, pcov = curve_fit(Func_R, vI2[:11], vR2[:11])
+    print(popt)
+    fFunc = Func_R(np.array(vI2),*popt)
+
+    #axs.plot(vI2,fFunc,color="gray",ls="dashed",lw=2)
+    axs.plot(vI2,vR2/popt[0], color="firebrick",ls="None",marker="s",markerfacecolor="None",markeredgewidth=2,ms=8)
+    #text = "R = "+str(round(p[3],3))+"  +"+str(round(p[2],3))+r"$\cdot I  +$"+str(round(p[1],3))+r"$\cdot I^2$   +"+str(round(p[0],3))+r"$ \cdot I^3$"
+    #axs.text(vI2[0],vR2[-2],text,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    text = "R = "+str(round(popt[0],3))+"  + "+str(round(popt[1],3))+r"$\cdot I^2$"
+    axs.text(vI2[0],1.68,text,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+
+    axs.set_xlabel('I [A]',fontsize=14)
+    axs.set_ylabel(r"$R/R_0$",fontsize=14)
+    axs.xaxis.set_tick_params(labelsize=14)
+    axs.yaxis.set_tick_params(labelsize=14)
+    
+
+    plt.show()
+
+def Read_ResT(filename):
+    f = open(filename);  T, Res = [],[]
+    for cont,l in enumerate(f,start=0):
+        asd = l.split("\t")
+        if cont > 1: 
+            T += [float(asd[0])]; Res += [float(asd[2].split("\n")[0])]
+            
+    return T, Res
+
+def Plot_MeasuredResistanceIntensity(filesumary):
+    vName, vIe, vIm, vVm, vRm, va,vb = ReadFolderSummary(filesumary)
+    vI2, vR2 = [], []
+    for k in range(0,len(vIe)):
+        if (vIm[k] > 0.2) and (vIm[k] < 0.85):
+            vI2 += [vIm[k]]; vR2 += [vRm[k]]
+    popt, pcov = curve_fit(Func_R, vI2[:11], vR2[:11])
+    print(popt)
+    fFunc = Func_R(np.array(vI2),*popt)
+    vRR0 = vR2/popt[0]
+
+    filename = "Emissivity_Analysis/Tungsten_Res(T).txt"
+    T,Res = Read_ResT(filename)
+    w = np.polyfit(np.array(T),np.array(Res)/Res[0],2)
+
+    vTmeas = []
+    for k in range(0,len(vI2)):
+        coeff = [w[0],w[1],w[2]-vRR0[k]]
+        sol = np.roots(coeff)
+        vTmeas += [sol[1]]
+        print(sol)
+
+    fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(6,5))
+    
+    axs.plot(vI2,vTmeas, color="mediumorchid",ls="None",marker="s",markerfacecolor="None",markeredgewidth=2,ms=8)
+    axs.set_xlabel('I [A]',fontsize=14)
+    axs.set_ylabel("Temperature [K]",fontsize=14)
+    axs.xaxis.set_tick_params(labelsize=14)
+    axs.yaxis.set_tick_params(labelsize=14)
+    plt.show()
+
+
+
+
+
+
+
+
+
 # ------------------------- MAIN ------------------------ #
 
 AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-#filename = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/RMeas8.txt"
+filename = "Emissivity_Measurement/OutputFiles/TungstenOxided_NoVacuum/R0Meas_80.0mA.txt"
 #PlotExpectedIntensity(AdcRate,filename)
 #PlotR0Example(filename,AdcRate)
 
@@ -314,7 +396,10 @@ AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-#Plot_SummaryResult(filename1,AdcRate)
+Plot_SummaryResult(filename,AdcRate)
 
-filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/SummaryResults.txt"
-Plot_FolderSummary(filesumari)
+#filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try3/SummaryResults.txt"
+#Plot_FolderSummary(filesumari)
+#Plot_TrickedR(filesumari)
+
+#Plot_MeasuredResistanceIntensity(filesumari)
