@@ -1,4 +1,3 @@
-from Ems_DaTa_Analysis import R
 import numpy as np 
 import NecessaryFunctions as nf
 import NecessaryVariables as nv 
@@ -19,13 +18,13 @@ ErrCheck = "No"
 R_Meas = nv.Voltage/nv.Intensity
 
 Res_Meas = R_Meas*nv.Wire_CrossSec/nv.Wire_Lenght
-print(nv.Wire_CrossSec,nv.Wire_Lenght,R_Meas,Res_Meas)
+
 alpha = nv.Material.con/(nv.Material.rho*nv.Material.Cp)
-Expected_Temp = round(nv.T0 + 1.0/alpha*(Res_Meas/nv.Material.Resist-1.0),0)
+#Expected_Temp = round(nv.T0 + 1.0/alpha*(Res_Meas/nv.Material.Resist-1.0),0)
+Expected_Temp = 410
 
 Ems_a = nv.Min_Ems; Ems_b = nv.Max_Ems; Ems_c = nv.Material.eps
 print(nv.Material.eps)
-
 
 for k in range(0,nv.NEms):
 
@@ -33,22 +32,26 @@ for k in range(0,nv.NEms):
     for m in range(0,nv.Ntime):
         Temp_Before = Temp_after.copy()
         dTemp = nf.TemperatureChange(nv.dt,Wire_X,Temp_Before)
+
         Temp_after = Temp_Before + dTemp
         PlotMatrix += [Temp_after]
         DiffMatrix += [np.max(np.abs(Temp_Before-Temp_after))]
+        
         if DiffMatrix[-1] < nv.SSerror:
             print("Steady State Reached")
             
-            #nf.PlotSteadyStateTemp(PlotMatrix[-1])
-            #nf.PlotDiffMatrix(DiffMatrix)
+            nf.PlotSteadyStateTemp(PlotMatrix[-1])
+            nf.PlotDiffMatrix(DiffMatrix)
             
             ErrCheck = "Yes"
             break
-
+    
     if ErrCheck != "Yes": 
         print("Steady State not Reached, increase number of time steps.")
+        nf.PlotSteadyStateTemp(PlotMatrix[-1])
+        nf.PlotDiffMatrix(DiffMatrix)
         sys.exit()
-
+    sys.exit()
     # ------ ---------- Checking Simulated temperature with expeted Temp ------ #
     Sim_MeanTemp = np.mean(Temp_after)
     
@@ -59,10 +62,10 @@ for k in range(0,nv.NEms):
     print("")
     print("")
 
-    if nv.Emserror < abs(Sim_MeanTemp-Expected_Temp):
+    if nv.Emserror > abs(Sim_MeanTemp-Expected_Temp):
         print("Emissivity Convergence REached!"); sys.exit()
     else:
-        if Sim_MeanTemp < Expected_Temp: 
+        if Sim_MeanTemp > Expected_Temp: 
             Ems_a = Ems_c; Ems_c = (Ems_a+Ems_b)/2.0
             nv.Material.eps = Ems_c
         else: 

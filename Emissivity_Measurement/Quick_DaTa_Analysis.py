@@ -84,7 +84,7 @@ def Plot_MeasCompa(filename1,filename2):
 # -------------------------------------------------------- #
 ## Simple Data visualization. 
 AdcRate=1
-Time, V,I,R,T1,T2 = readMeas("Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/RMeas1500.txt", AdcRate)
+Time, V,I,R,T1,T2 = readMeas("Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/RMeas1100.txt", AdcRate)
 Av_I, St_I, Av_V, St_V, Av_R , St_R = Plot_Meas(Time,V,I,R,T1,T2); plt.show()
 
 # -------------------------------------------------------- #

@@ -30,10 +30,8 @@ def TemperatureChange(dt,X_vec,Temp):
         alpha = nv.Material.con/(nv.Material.rho*nv.Material.Cp*1000)
 
         heat = nv.Intensity**2 * nv.R / ( nv.Material.Cp*nv.Material.rho*dV*1e6 ) 
-        
         cold1 = nv.Material.eps * nv.BZ * ( Temp[j]**4 - nv.T0**4 ) * 2 * np.pi * (nv.Wire_Diameter/2.0) * dx / ( nv.Material.Cp*nv.Material.rho*dV*1e6 )
         cold2 = alpha*(Tjm1-2*Tj+Tjp1)/dx**2
-        
         dtemp[j] =  heat * dt - cold1 *dt + cold2 * dt
     return dtemp
 
