@@ -101,10 +101,10 @@ def FitResistance(time,r):
 
     tt, rr, yfit = [], [], []; start = 0; end = 0
     for i in range(0,len(r)):
-        if (r[i] > 0.5) and (start == 0): 
+        if (r[i] > 0.2) and (start == 0): 
             asd = r[i]; start = i; s2 = int(start+5)
             rr += [r[i]-np.mean(r[start:s2])]; tt += [time[i]-time[start]]
-        elif (r[i] > 0.5):
+        elif (r[i] > 0.2):
             s2 = int(start+5)
             rr += [r[i]-np.mean(r[start:s2])]; tt += [time[i]-time[start]]
         elif (start != 0) and (end == 0): end = i
@@ -176,10 +176,10 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[0][0].set_ylabel("Intensity [A]",fontsize=14)
     axs[0][0].xaxis.set_tick_params(labelsize=14)
     axs[0][0].yaxis.set_tick_params(labelsize=14)
-    
-    axs[0][0].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
-    axs[0][0].set_ylim(bottom=-0.1, top=np.max(I)+0.2)
-    axs[0][0].text(20000,0.2,r"$I_{mean} = $"+str(round(Imean,4))+" [A]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    #axs[0][0].set_xlim(left=Time[start],right=Time[end])
+    #axs[0][0].set_ylim(bottom=-0.1, top=np.max(I)+0.2)
+    axs[0][0].text(0,0.2,r"$I_{mean} = $"+str(round(Imean,4))+" [A]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    '''
     axs[0][1].plot(Time,V, color = "royalblue",ls="None",marker=".")
     axs[0][1].axvline(x=Vxstart, lw=2, ls="dashed", color="gray")
     axs[0][1].axvline(x=Vxend, lw=2, ls="dashed", color="gray")
@@ -189,7 +189,7 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[0][1].yaxis.set_tick_params(labelsize=14)
     axs[0][1].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
     axs[0][1].set_ylim(bottom=-0.1, top=np.max(V)+0.2)
-    axs[0][1].text(20000,0.2,r"$V_{mean} = $"+str(round(Vmean,4))+" [V]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[0][1].text(0,0.2,r"$V_{mean} = $"+str(round(Vmean,4))+" [V]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
 
     axs[1][0].plot(Time,R, color = "firebrick",ls="None",marker=".")
     axs[1][0].axvline(x=Rxstart, lw=2, ls="dashed", color="gray")
@@ -200,7 +200,7 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[1][0].yaxis.set_tick_params(labelsize=14)
     axs[1][0].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
     axs[1][0].set_ylim(bottom=-0.1, top=np.max(R)+0.2)
-    axs[1][0].text(20000,0,r"$R_{mean} = $"+str(round(Rmean,4))+r"$[ \Omega ]$",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[1][0].text(0,0,r"$R_{mean} = $"+str(round(Rmean,4))+r"$[ \Omega ]$",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
     
 
     axs[1][1].plot(XX_1,RR_1,color="indianred",ls="None",marker=".")
@@ -212,8 +212,8 @@ def Plot_SummaryResult(filename, AdcRate):
     axs[1][1].set_xlim(left=Time[start],right=Rxstart)
     axs[1][1].set_ylim(bottom=-0.1,top=np.max(RR_1)+0.02)
     text1 = r'$ \Delta R (t) = ' +str(round(par_1[0],4)) +r'\cdot \left( 1 - exp\left(- '+str(round(par_1[1],4)) +r'\cdot t\right) \right)$'
-    axs[1][1].text(4800,0.0,text1,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
-
+    axs[1][1].text(0.0,0.0,text1,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    '''
     plt.savefig(filename.split(".")[0]+".png")
     plt.show()
     print(filename.split(".")[0]+".png")
@@ -378,16 +378,13 @@ def Plot_MeasuredResistanceIntensity(filesumary):
 
 
 
-
-
-
 # ------------------------- MAIN ------------------------ #
 
 AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-#filename = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/RMeas1250.txt"
+filename = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/R0Meas_50.0mA.txt"
 #PlotExpectedIntensity(AdcRate,filename)
 #PlotR0Example(filename,AdcRate)
 
@@ -399,10 +396,10 @@ AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-#Plot_SummaryResult(filename,AdcRate)
+Plot_SummaryResult(filename,AdcRate)
 
-filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/SummaryResults.txt"
+#filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/SummaryResults.txt"
 #Plot_FolderSummary(filesumari)
 #Plot_TrickedR(filesumari)
 
-Plot_MeasuredResistanceIntensity(filesumari)
+#Plot_MeasuredResistanceIntensity(filesumari)

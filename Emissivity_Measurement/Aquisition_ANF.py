@@ -11,8 +11,8 @@ AdqRate = 1000                          # Adquisition Rate. Max. (1 Ac/100 us)
 
 Flag_MeasureADCZero = "Yes"
 Flag_MeasureR0 = "No,310"                    # [mA] Ojo, max 300 mA
-Flag_MeasureR = "Yes,1500"                        # Current Already set in by source.
-OutputFolderName = "Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Try4/"
+Flag_MeasureR = "Yes,800"                        # Current Already set in by source.
+OutputFolderName = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/"
 
 import os
 os.chdir(os.path.dirname(os.getcwd()))
@@ -43,7 +43,7 @@ nf.setADCRate(ser,AdqRate)
 
 # ------------------------------- Measure Zero Current State ----------------------------- #
 
-nf.setVoffset(0,100,ser)
+nf.setVoffset(0,10,ser)
 
 if Flag_MeasureADCZero == "Yes":
     Vzero, Izero = nf.MeasureADCZero(ser,OutputFolderName)

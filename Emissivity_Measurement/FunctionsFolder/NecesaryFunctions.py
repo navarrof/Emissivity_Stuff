@@ -129,7 +129,7 @@ def MeasureADCZero(ser,foldername):
     return Vzero, Izero
 
 def MeasureR0(I0,Vzero, Izero, ser,foldername):
-    Nmeas = 8000
+    Nmeas = 100000
     cmd = "M1,"
     cmd += str(I0)
 
@@ -172,7 +172,7 @@ def ReadMesage(Vzero,Izero,ser):
     return V, I, R, temperature1, temperature2
 
 def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
-    Nmeas_SP1 = 100; Nmeas_P1P0 = 500; Nmeas_P0s = 100
+    Nmeas_SP1 = 1000; Nmeas_P1P0 = 50000; Nmeas_P0s = 5000
     vec_I, vec_V, vec_R, vec_T1, vec_T2 = [],[],[],[],[]
 
     print("    Measurement ON current OFF     ")
