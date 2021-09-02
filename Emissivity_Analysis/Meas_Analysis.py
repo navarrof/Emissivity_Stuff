@@ -154,11 +154,11 @@ def Plot_SummaryResult(filename, AdcRate):
     fig.suptitle(filename.split("/")[-1],fontsize=14)
 
     if len(filename.split("R0")) > 1: 
-        Ixstart = int(Time[start]+500); Ixend = int(Time[end] - 1)
+        Ixstart = int(Time[start]+30000); Ixend = int(Time[end] - 1)
         Imean = np.mean(I[Ixstart:Ixend])
-        Vxstart = int(Time[start]+1800); Vxend = int(Time[end]-1)
+        Vxstart = int(Time[start]+30000); Vxend = int(Time[end]-1)
         Vmean = np.mean(V[Vxstart:Vxend])
-        Rxstart = int(Time[start]+1500); Rxend = int(Time[end] - 1)
+        Rxstart = int(Time[start]+30000); Rxend = int(Time[end] - 1)
         Rmean = np.mean(R[Rxstart:Rxend])
     else:
         print(start,end)
@@ -170,50 +170,52 @@ def Plot_SummaryResult(filename, AdcRate):
         Rmean = np.mean(R[Rxstart:Rxend])
     
     axs[0][0].plot(Time,I, color="forestgreen",ls="None",marker=".")
+    axs[0][1].plot(Time,V, color = "royalblue",ls="None",marker=".")
+    axs[1][0].plot(Time,R, color = "firebrick",ls="None",marker=".")
+    axs[1][1].plot(XX_1,RR_1,color="indianred",ls="None",marker=".")
+    axs[1][1].plot(XX_1,yfit_1,lw=2,ls="dashed",color="black")
+    
     axs[0][0].axvline(x=Ixstart, lw=2, ls="dashed", color="gray")
     axs[0][0].axvline(x=Ixend, lw=2, ls="dashed", color="gray")
     axs[0][0].set_xlabel("Time [ms]",fontsize=14)
     axs[0][0].set_ylabel("Intensity [A]",fontsize=14)
     axs[0][0].xaxis.set_tick_params(labelsize=14)
     axs[0][0].yaxis.set_tick_params(labelsize=14)
-    #axs[0][0].set_xlim(left=Time[start],right=Time[end])
-    #axs[0][0].set_ylim(bottom=-0.1, top=np.max(I)+0.2)
-    axs[0][0].text(0,0.2,r"$I_{mean} = $"+str(round(Imean,4))+" [A]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
-    '''
-    axs[0][1].plot(Time,V, color = "royalblue",ls="None",marker=".")
+    axs[0][0].set_xlim(left=Time[start]-5000,right=Time[end]+10000)
+    axs[0][0].set_ylim(bottom=-0.01, top=np.mean(I[Ixstart:Ixend])+0.025)
+    axs[0][0].text(2000,0.1,r"$I_{mean} = $"+str(round(Imean,4))+" [A]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    
+    
     axs[0][1].axvline(x=Vxstart, lw=2, ls="dashed", color="gray")
     axs[0][1].axvline(x=Vxend, lw=2, ls="dashed", color="gray")
     axs[0][1].set_xlabel("Time [ms]",fontsize=14)
     axs[0][1].set_ylabel("Voltage [V]",fontsize=14)
     axs[0][1].xaxis.set_tick_params(labelsize=14)
     axs[0][1].yaxis.set_tick_params(labelsize=14)
-    axs[0][1].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
-    axs[0][1].set_ylim(bottom=-0.1, top=np.max(V)+0.2)
-    axs[0][1].text(0,0.2,r"$V_{mean} = $"+str(round(Vmean,4))+" [V]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    axs[0][1].set_xlim(left=Time[start]-5000,right=Time[end]+10000)
+    axs[0][1].set_ylim(bottom=-0.01, top=np.mean(V[Vxstart:Vxend])+0.05)
+    axs[0][1].text(2000,0.1,r"$V_{mean} = $"+str(round(Vmean,4))+" [V]",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
 
-    axs[1][0].plot(Time,R, color = "firebrick",ls="None",marker=".")
+    
     axs[1][0].axvline(x=Rxstart, lw=2, ls="dashed", color="gray")
     axs[1][0].axvline(x=Rxend, lw=2, ls="dashed", color="gray")
     axs[1][0].set_xlabel("Time [ms]",fontsize=14)
     axs[1][0].set_ylabel("Resistance [Ohm]",fontsize=14)
     axs[1][0].xaxis.set_tick_params(labelsize=14)
     axs[1][0].yaxis.set_tick_params(labelsize=14)
-    axs[1][0].set_xlim(left=Time[start]-1000,right=Time[end]+1000)
-    axs[1][0].set_ylim(bottom=-0.1, top=np.max(R)+0.2)
-    axs[1][0].text(0,0,r"$R_{mean} = $"+str(round(Rmean,4))+r"$[ \Omega ]$",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
-    
+    axs[1][0].set_xlim(left=Time[start]-5000,right=Time[end]+10000)
+    axs[1][0].set_ylim(bottom=-0.01, top=np.max(R)+0.025)
+    axs[1][0].text(2000,0.2,r"$R_{mean} = $"+str(round(Rmean,4))+r"$[ \Omega ]$",fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
 
-    axs[1][1].plot(XX_1,RR_1,color="indianred",ls="None",marker=".")
-    axs[1][1].plot(XX_1,yfit_1,lw=2,ls="dashed",color="black")
     axs[1][1].set_xlabel("Time [ms]",fontsize=14)
     axs[1][1].set_ylabel(r"$\Delta R [Ohm]$",fontsize=14)
     axs[1][1].xaxis.set_tick_params(labelsize=14)
     axs[1][1].yaxis.set_tick_params(labelsize=14)
-    axs[1][1].set_xlim(left=Time[start],right=Rxstart)
-    axs[1][1].set_ylim(bottom=-0.1,top=np.max(RR_1)+0.02)
+    axs[1][1].set_xlim(left=Time[start]-100,right=Rxstart+100)
+    axs[1][1].set_ylim(bottom=-0.1,top=np.max(RR_1)+0.05)
     text1 = r'$ \Delta R (t) = ' +str(round(par_1[0],4)) +r'\cdot \left( 1 - exp\left(- '+str(round(par_1[1],4)) +r'\cdot t\right) \right)$'
-    axs[1][1].text(0.0,0.0,text1,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
-    '''
+    axs[1][1].text(250,-0.05,text1,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+
     plt.savefig(filename.split(".")[0]+".png")
     plt.show()
     print(filename.split(".")[0]+".png")
@@ -235,8 +237,10 @@ def ReadFolderSummary(filesumary):
 
             try: vVm += [float(asd[15])]
             except ValueError: vVm += [asd[15]]
+                
+                
 
-            try: vRm += [float(asd[20])]
+            try:  vRm += [float(asd[20])]
             except ValueError: vRm += [asd[20]]
 
             try: va += [float(asd[25])]
@@ -255,6 +259,7 @@ def Plot_FolderSummary(filesumary):
 
     fig.suptitle(filesumary.split("/")[-2],fontsize=14)
     axs[0][0].plot(vIe,vIm, color="forestgreen",ls="None",marker="o",markerfacecolor="None",markeredgewidth=1.5)
+    axs[0][0].plot(vIe,vIe, color="gray",ls="dashed",lw=2)
     axs[0][0].set_xlabel("$I_{expected}$ [A]",fontsize=14)
     axs[0][0].set_ylabel("$I_{measured}$ [A]",fontsize=14)
     axs[0][0].xaxis.set_tick_params(labelsize=14)
@@ -346,7 +351,7 @@ def Plot_MeasuredResistanceIntensity(filesumary):
     vName, vIe, vIm, vVm, vRm, va,vb = ReadFolderSummary(filesumary)
     vI2, vR2 = [], []
     for k in range(0,len(vIe)):
-        if (vIm[k] > 0.34) and (vIm[k] < 1.4):
+        if (vIm[k] > 0.0) and (vIm[k] < 1.4):
             vI2 += [vIm[k]]; vR2 += [vRm[k]]
     popt, pcov = curve_fit(Func_R, vI2[:11], vR2[:11])
     print(popt)
@@ -384,7 +389,7 @@ AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-filename = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/R0Meas_50.0mA.txt"
+filename = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/RMeas800.txt"
 #PlotExpectedIntensity(AdcRate,filename)
 #PlotR0Example(filename,AdcRate)
 
@@ -396,10 +401,10 @@ filename = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/R0Meas_50.0m
 
 #PlotAllFiles(AdcRate)
 
-Plot_SummaryResult(filename,AdcRate)
+#Plot_SummaryResult(filename,AdcRate)
 
-#filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/SummaryResults.txt"
-#Plot_FolderSummary(filesumari)
-#Plot_TrickedR(filesumari)
+filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/SummaryResults.txt"
+Plot_FolderSummary(filesumari)
+Plot_TrickedR(filesumari)
 
-#Plot_MeasuredResistanceIntensity(filesumari)
+Plot_MeasuredResistanceIntensity(filesumari)

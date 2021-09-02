@@ -10,7 +10,7 @@ Voltage = 2.5235                  # [V]
 
 Wire_Lenght = 4e-2                        # [m]
 Wire_Diameter = 0.2e-3                     # [m]
-Wire_N = 100                               # [Number Wire Partitions]
+Wire_N = 1000                               # [Number Wire Partitions]
 Wire_dx = Wire_Lenght/Wire_N
 Wire_CrossSec = np.pi*(Wire_Diameter/2.0)**2
 
