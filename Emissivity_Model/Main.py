@@ -21,11 +21,11 @@ Res_Meas = R_Meas*nv.Wire_CrossSec/nv.Wire_Lenght
 
 alpha = nv.Material.con/(nv.Material.rho*nv.Material.Cp)
 #Expected_Temp = round(nv.T0 + 1.0/alpha*(Res_Meas/nv.Material.Resist-1.0),0)
-Expected_Temp = 410
+Expected_Temp = 525
 
 Ems_a = nv.Min_Ems; Ems_b = nv.Max_Ems; Ems_c = nv.Material.eps
-print(nv.Material.eps)
-
+print("Initial Emissivity Guess: ",nv.Material.eps)
+nv.Material.eps = 0.9
 for k in range(0,nv.NEms):
 
     # --------------------- Reaching Steady State.... --------------------- #
@@ -36,12 +36,14 @@ for k in range(0,nv.NEms):
         Temp_after = Temp_Before + dTemp
         PlotMatrix += [Temp_after]
         DiffMatrix += [np.max(np.abs(Temp_Before-Temp_after))]
-        
+        print(DiffMatrix[-1])
         if DiffMatrix[-1] < nv.SSerror:
             print("Steady State Reached")
             
             nf.PlotSteadyStateTemp(PlotMatrix[-1])
             nf.PlotDiffMatrix(DiffMatrix)
+
+            print("Tmax: "+str(np.max(Temp_after))+"   Nsteps: "+str(m))
             
             ErrCheck = "Yes"
             break
