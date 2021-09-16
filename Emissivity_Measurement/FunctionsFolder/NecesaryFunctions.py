@@ -129,7 +129,7 @@ def MeasureADCZero(ser,foldername):
     return Vzero, Izero
 
 def MeasureR0(I0,Vzero, Izero, ser,foldername):
-    Nmeas = 100000
+    Nmeas = 50000
     cmd = "M1,"
     cmd += str(I0)
 

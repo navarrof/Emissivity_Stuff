@@ -27,7 +27,7 @@ def readMeas(filename, AdcRate):
 def Plot_Meas(Time,V,I,R,T1,T2):
     fig, axs = plt.subplots(1,2,constrained_layout = True, figsize=(10,4),  gridspec_kw={'width_ratios': [2, 1]})
     
-    ss1 = 300; ss2 = 8000
+    ss1 = 20000; ss2 = 50000
     Av_I = np.mean(I[ss1:ss2]); Av_V = np.mean(V[ss1:ss2]); Av_R = np.mean(R[ss1:ss2])
     St_I = np.std(I[ss1:ss2]); St_V = np.std(V[ss1:ss2]); St_R = np.std(R[ss1:ss2])
 
@@ -37,8 +37,8 @@ def Plot_Meas(Time,V,I,R,T1,T2):
     axs[0].plot(Time,V,linewidth=2,color="royalblue",label="V  = "+str(round(Av_V,4))+" [v]")
     axs[0].plot(Time,I,linewidth=2, color = "forestgreen",label="I = "+str(round(Av_I,4))+" [A]")
     axs[0].plot(Time,R,linewidth=2, color = "orchid",label = "R = "+str(round(Av_R,4))+" [Ohm]")
-    #axs[0].axvline(x=ss1,linewidth=2,color = "grey", linestyle="dashed")
-    #axs[0].axvline(x=ss2,linewidth=2,color = "grey", linestyle="dashed", label = "ss Window")
+    axs[0].axvline(x=ss1,linewidth=2,color = "grey", linestyle="dashed")
+    axs[0].axvline(x=ss2,linewidth=2,color = "grey", linestyle="dashed", label = "ss Window")
     axs[0].set_xlabel("Time [ms]",fontsize = 14)
 
     axs[0].legend(loc=1)
@@ -84,7 +84,7 @@ def Plot_MeasCompa(filename1,filename2):
 # -------------------------------------------------------- #
 ## Simple Data visualization. 
 AdcRate=1
-Time, V,I,R,T1,T2 = readMeas("Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/RMeas750.txt", AdcRate)
+Time, V,I,R,T1,T2 = readMeas("Emissivity_Measurement/OutputFiles/Tungsten_NoVacuum_Cal/RMeas1600.txt", AdcRate)
 Av_I, St_I, Av_V, St_V, Av_R , St_R = Plot_Meas(Time,V,I,R,T1,T2); plt.show()
 
 # -------------------------------------------------------- #
