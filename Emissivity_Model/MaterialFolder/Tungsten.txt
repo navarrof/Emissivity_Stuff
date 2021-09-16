@@ -6,6 +6,6 @@ Density: 19.35      		        # [g/cm3] Density
 MeltingPoint: 3680  		        # [K]
 WorkFunction: 4.5		            # [eV]
 Emissivity: 0.4				        #  
-SpecificHeat: 0.132		            # [J/gK]
-Conductivity: 174.0	                # [W/mK]
+SpecificHeat: Tungsten_Cp		            # [J/gK]
+Conductivity: 200	            # [W/mK]
 Resistivity: 5.44e-8                # [Ohm m]

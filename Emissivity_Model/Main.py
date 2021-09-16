@@ -15,17 +15,10 @@ DiffMatrix = []
 
 ErrCheck = "No"
 
-R_Meas = nv.Voltage/nv.Intensity
-
-Res_Meas = R_Meas*nv.Wire_CrossSec/nv.Wire_Lenght
-
-alpha = nv.Material.con/(nv.Material.rho*nv.Material.Cp)
-#Expected_Temp = round(nv.T0 + 1.0/alpha*(Res_Meas/nv.Material.Resist-1.0),0)
-Expected_Temp = 525
+print("Initial Emissivity Guess: ",nv.Material.eps)
 
 Ems_a = nv.Min_Ems; Ems_b = nv.Max_Ems; Ems_c = nv.Material.eps
-print("Initial Emissivity Guess: ",nv.Material.eps)
-nv.Material.eps = 0.9
+
 for k in range(0,nv.NEms):
 
     # --------------------- Reaching Steady State.... --------------------- #
@@ -36,14 +29,15 @@ for k in range(0,nv.NEms):
         Temp_after = Temp_Before + dTemp
         PlotMatrix += [Temp_after]
         DiffMatrix += [np.max(np.abs(Temp_Before-Temp_after))]
-        print(DiffMatrix[-1])
+        print("Maximum Error: ",DiffMatrix[-1])
+
         if DiffMatrix[-1] < nv.SSerror:
             print("Steady State Reached")
             
-            nf.PlotSteadyStateTemp(PlotMatrix[-1])
-            nf.PlotDiffMatrix(DiffMatrix)
+            #nf.PlotSteadyStateTemp(PlotMatrix[-1])
+            #nf.PlotDiffMatrix(DiffMatrix)
 
-            print("Tmax: "+str(np.max(Temp_after))+"   Nsteps: "+str(m))
+            print("Tmax: "+str(np.max(Temp_after))+"    Tmean: "+str(np.mean(Temp_after))+"   Nsteps: "+str(m))
             
             ErrCheck = "Yes"
             break
@@ -53,29 +47,25 @@ for k in range(0,nv.NEms):
         nf.PlotSteadyStateTemp(PlotMatrix[-1])
         nf.PlotDiffMatrix(DiffMatrix)
         sys.exit()
-    sys.exit()
     # ------ ---------- Checking Simulated temperature with expeted Temp ------ #
     Sim_MeanTemp = np.mean(Temp_after)
     
     print("")
     print("")
-    print("Expected Temperature: ",Expected_Temp)
+    print("Expected Temperature: ",nv.Expected_Temp)
     print("Simulated Temperature: ",Sim_MeanTemp)
     print("")
     print("")
 
-    if nv.Emserror > abs(Sim_MeanTemp-Expected_Temp):
-        print("Emissivity Convergence REached!"); sys.exit()
-    else:
-        if Sim_MeanTemp > Expected_Temp: 
-            Ems_a = Ems_c; Ems_c = (Ems_a+Ems_b)/2.0
-            nv.Material.eps = Ems_c
-        else: 
-            Ems_b = Ems_c; Ems_c = (Ems_a+Ems_b)/2.0
-            nv.Material.eps = Ems_c
 
-
-        print(nv.Material.eps)
+    if Sim_MeanTemp > nv.Expected_Temp: 
+        Ems_a = Ems_c; Ems_c = (Ems_a+Ems_b)/2.0
+    else: 
+        Ems_b = Ems_c; Ems_c = (Ems_a+Ems_b)/2.0
+    
+    if abs(nv.Material.eps - Ems_c) < nv.Emserror:
+        print("Emissivity Convergence reached! "); break
+    else: nv.Material.eps = Ems_c
 
 print("Final Emissivity: ",nv.Material.eps)
 

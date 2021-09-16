@@ -312,7 +312,7 @@ def Plot_TrickedR(filesumary):
     fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(10,7))
     vI2, vR2 = [], []
     for k in range(0,len(vIe)):
-        if (vIm[k] > 0.34) and (vIm[k] < 1.45):
+        if (vIm[k] > 0.0) and (vIm[k] < 2.0):
             vI2 += [vIm[k]]; vR2 += [vRm[k]]
 
     #p = np.polyfit(vI2,vR2,3); 
@@ -389,7 +389,7 @@ AdcRate = 1.0
 
 #PlotAllFiles(AdcRate)
 
-filename = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/RMeas800.txt"
+#filename = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/RMeas800.txt"
 #PlotExpectedIntensity(AdcRate,filename)
 #PlotR0Example(filename,AdcRate)
 
