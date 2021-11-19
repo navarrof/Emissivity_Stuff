@@ -85,10 +85,20 @@ def PlotExpectedIntensity(AdcRate,filename):
     
     plt.show()
 
-def PlotR0Example(filename,AdcRate):
-    Time, V,I,R,T1,T2 = readMeas(filename, AdcRate)
+def PlotR0Example(filesumary,fileCalInt,fileCalVol):
+    vName, vIe, vIm_0, vVm_0, vRm_0, va,vb = ReadFolderSummary(filesumary)
+    vIm, vVm, vRm = ApplyCalibrationFactors(vIm_0, vVm_0, vRm_0)
 
-    plt.plot(Time, R, color="firebrick",marker="s",ms=5)
+    popt, pcov = curve_fit(Func_R, vIm[:11], vRm[:11])
+    print(popt,pcov)
+    fFunc = Func_R(np.array(vIm),*popt)
+
+
+    plt.plot(vIm, vRm, color="firebrick",ls="None",marker="s",markerfacecolor="None",markeredgewidth=2.0)
+    plt.plot(vIm, fFunc, color="darkgray",lw = 3, ls="dashed")
+    plt.text(0.06,2.0,r"R = "+str(round(popt[0],3))+r' + $\cdot T^2$ ' ,fontsize=12,bbox={'facecolor': 'white', 'alpha': 1.0, 'pad': 6})
+    
+    
 
     plt.ylabel("Resistence [Ohm]",fontsize=14)
     plt.xlabel("Time [ms]",fontsize=14)
@@ -117,34 +127,6 @@ def FitResistance(time,r):
 
     tt = np.array(tt)+time[start]*np.array(tt)**0
     return tt, rr, yfit, popt, start, end 
-
-def PlotR0FitExample(filename1,filename2,AdcRate):
-    Time_1, V_1,I_1,R_1,T1_1,T2_1 = readMeas(filename1, AdcRate)
-    Time_2, V_2,I_2,R_2,T1_2,T2_2 = readMeas(filename2, AdcRate)
-
-    XX_1, RR_1, yfit_1, par_1 = FitResistance(Time_1, R_1)
-    XX_2, RR_2, yfit_2, par_2 = FitResistance(Time_2, R_2)
-
-    plt.figure(figsize=(8,6))
-    plt.plot(XX_1,RR_1,color = "indianred",ls="None", marker="s",ms= 4,label= "I = 0.7 [A]")
-    plt.plot(XX_1,yfit_1, color = "black", lw = 2, ls="dashed")
-    plt.plot(XX_2,RR_2, color = "seagreen", ls="None", marker="s",ms=4, label = "I = 0.9 [A]")
-    plt.plot(XX_2,yfit_2, color = "black",lw=2, ls="dashed")
-
-    plt.xlabel('Time [ms]',fontsize=14)
-    plt.ylabel("AR [Ohm]",fontsize=14)
-    plt.xticks(fontsize=14); plt.yticks(fontsize=14)
-
-    plt.legend(loc="lower right",fontsize=14)
-    text1 = r'$ \Delta R (t) = ' +str(round(par_1[0],4)) +r'\cdot \left( 1 - exp\left(- '+str(round(par_1[1],4)) +r'\cdot t\right) \right)$'
-    text2 = r'$ \Delta R (t) = ' +str(round(par_2[0],4)) +r'\cdot \left( 1 - exp\left(- '+str(round(par_2[1],4)) +r'\cdot t\right) \right)$'
-
-    plt.text(1150,0.38,text1, fontsize=14)
-    plt.text(1150,0.54,text2, fontsize=14)
-
-    plt.xlim(-50,3000)
-
-    plt.show()
 
 def Plot_SummaryResult(filename, AdcRate): 
     Time, V,I,R,T1,T2 = readMeas(filename, AdcRate)
@@ -226,7 +208,6 @@ def ReadFolderSummary(filesumary):
     vName, vIe, vIm, vVm, vRm, va, vb = [],[],[],[],[],[],[]
     for cont,l in enumerate(f,start=0):
         asd = l.split(" ")
-        print(asd)
         if cont > 1: 
             if asd[10] == "-": continue
 
@@ -251,9 +232,34 @@ def ReadFolderSummary(filesumary):
 
     return vName, vIe, vIm, vVm, vRm, va,vb
 
-def Plot_FolderSummary(filesumary):
-    vName, vIe, vIm, vVm, vRm, va,vb = ReadFolderSummary(filesumary)
-    print(vIe,vIm,vVm,vRm,va,vb)
+def ApplyCalibrationFactors(vIm, vVm, vRm):
+    x_calI, y_calI = ReadCalibrationFactor(fileCalInt)
+    x_calV, y_calV = ReadCalibrationFactor(fileCalVol)
+
+    def findClosest(val, xvec, yvec): 
+        for j in range(0,len(xvec)):
+            if val < xvec[0]: r = yvec[0]; break
+            elif val > xvec[-1]: r = yvec[-1]; break
+            elif val > xvec[j]: 
+                b = (yvec[j]-yvec[j+1])/(xvec[j]-xvec[j+1])
+                a = yvec[j]-b*xvec[j] 
+                r = a+b*val
+                break
+        return r
+
+    cal_Im, cal_Vm, cal_Rm = [],[],[]
+    for k in range(0,len(vIm)):
+        ri = findClosest(vIm[k],x_calI,y_calI)
+        rv = findClosest(vVm[k],x_calV,y_calV)
+        print(ri,rv)
+        cal_Im += [vIm[k]*ri]; cal_Vm += [vVm[k]*rv]; cal_Rm += [cal_Vm[-1]/cal_Im[-1]]
+   
+    return cal_Im, cal_Vm, cal_Rm
+
+def Plot_FolderSummary(filesumary,fileCalInt,fileCalVol):
+    vName, vIe, vIm_0, vVm_0, vRm_0, va,vb = ReadFolderSummary(filesumary)
+
+    vIm, vVm, vRm = ApplyCalibrationFactors(vIm_0, vVm_0, vRm_0)
 
     fig, axs = plt.subplots(2,2,constrained_layout = True, figsize=(10,7))
 
@@ -348,13 +354,13 @@ def Read_ResT(filename):
     return T, Res
 
 def Plot_MeasuredResistanceIntensity(filesumary):
-    vName, vIe, vIm, vVm, vRm, va,vb = ReadFolderSummary(filesumary)
+    vName, vIe, vIm_0, vVm_0, vRm_0, va,vb = ReadFolderSummary(filesumary)
+    vIm, vVm, vRm = ApplyCalibrationFactors(vIm_0, vVm_0, vRm_0)
     vI2, vR2 = [], []
     for k in range(0,len(vIe)):
         if (vIm[k] > 0.0) and (vIm[k] < 1.4):
             vI2 += [vIm[k]]; vR2 += [vRm[k]]
     popt, pcov = curve_fit(Func_R, vI2[:11], vR2[:11])
-    print(popt)
     fFunc = Func_R(np.array(vI2),*popt)
     vRR0 = vR2/popt[0]
 
@@ -367,7 +373,7 @@ def Plot_MeasuredResistanceIntensity(filesumary):
         coeff = [w[0],w[1],w[2]-vRR0[k]]
         sol = np.roots(coeff)
         vTmeas += [sol[1]]
-        print(sol)
+        print(vIm[k],vVm[k],vTmeas[k])
 
     fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(6,5))
     
@@ -378,8 +384,17 @@ def Plot_MeasuredResistanceIntensity(filesumary):
     axs.yaxis.set_tick_params(labelsize=14)
     plt.show()
 
+def ReadCalibrationFactor(filename):
+    f = open(filename)
+    v1, v2 = [], []
+    for l in f: 
+        asd = l.split(" ")
+        if asd[0] == "#": continue
+        else: 
+            v1 += [float(asd[0])]; v2 += [float(asd[5])]
+    f.close()
 
-
+    return v1,v2
 
 
 
@@ -404,7 +419,10 @@ AdcRate = 1.0
 #Plot_SummaryResult(filename,AdcRate)
 
 filesumari = "Emissivity_Measurement/OutputFiles/Tungsten_Vacuum_Try1/SummaryResults.txt"
-Plot_FolderSummary(filesumari)
-Plot_TrickedR(filesumari)
+fileCalInt = "CalibrationFactors_Circuit1_Intensity.txt"
+fileCalVol = "CalibrationFactors_Circuit1_Voltage.txt"
+Plot_FolderSummary(filesumari,fileCalInt,fileCalVol)
+#Plot_TrickedR(filesumari)
+#PlotR0Example(filesumari,fileCalInt,fileCalVol)
 
 Plot_MeasuredResistanceIntensity(filesumari)

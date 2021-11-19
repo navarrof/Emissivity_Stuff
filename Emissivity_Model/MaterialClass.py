@@ -24,7 +24,7 @@ class Material:
         self.wfun = float(d_MatInfo["WorkFunction:"])               # [eV] Work function
         self.eps = float(d_MatInfo["Emissivity:"])                  # [] Emissivity
         
-        self.Resist = float(d_MatInfo["Resistivity:"])              # [10^-8 Ohm m] Resistivity
+        
 
         # ---------------------- Specific Heat ------------------------ #
         CpInput = d_MatInfo["SpecificHeat:"]
@@ -59,7 +59,6 @@ class Material:
                     self.D_k["Temperature"] += [float(l.split()[0])]
                     self.D_k["Parameter"] += [float(l.split()[1])]
             f_k.close()
-
         self.con = self.Getk(np.array([300]))             # [W/mK] Conductivity
         
     def GetParameterValue(self,D_Par,T):

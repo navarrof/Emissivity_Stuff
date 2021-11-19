@@ -5,7 +5,6 @@ Am: 183.84	    		        # Atomic Mass
 Density: 19.35      		        # [g/cm3] Density
 MeltingPoint: 3680  		        # [K]
 WorkFunction: 4.5		            # [eV]
-Emissivity: 0.4				        #  
+Emissivity: 0.5				        #  
 SpecificHeat: Tungsten_Cp		            # [J/gK]
-Conductivity: 200	            # [W/mK]
-Resistivity: 5.44e-8                # [Ohm m]
+Conductivity: Tungsten_k	            # [W/mK]

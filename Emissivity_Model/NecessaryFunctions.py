@@ -62,6 +62,7 @@ def ConductionCooling_CrankNick(dt,dx, X_vec,Temp):
     A = np.array([]); D = np.array([])
 
     for j in range(0,len(X_vec)):
+
         if j == 0:
             b0 = 1; c0 = 0.0; d0 = nv.Tleft
             D = np.append(D,d0)
@@ -110,13 +111,24 @@ def TemperatureChange(dt,X_vec,Temp):
 
     return dtemp
 
-def PlotSteadyStateTemp(Temp):
-    plt.plot(Temp)
+def PlotSteadyStateTemp(X_vec,Temp):
+    fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(10,7))
+    axs.plot(X_vec,Temp,color="red",lw=3)
+    axs.set_xlabel('Position [m]',fontsize=14)
+    axs.set_ylabel('Temperature [K]',fontsize=14)
+    axs.xaxis.set_tick_params(labelsize=14)
+    axs.yaxis.set_tick_params(labelsize=14)
     plt.show()
 
 
 def PlotDiffMatrix(Diff):
-    plt.plot(Diff)
+    fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(10,7))
+    axs.plot(Diff,color="black",lw=2,marker="s",markerfacecolor="None",markeredgewidth=1,ms=1)
+    axs.set_xlabel('Iteration Number',fontsize=14)
+    axs.set_ylabel(r'Absolute Error $T^{k+1} - T^{k} $ [K]',fontsize=14)
+    axs.xaxis.set_tick_params(labelsize=14)
+    axs.yaxis.set_tick_params(labelsize=14)
+    axs.set_yscale('log')
     plt.show()
 
 

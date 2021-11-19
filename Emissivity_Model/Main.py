@@ -34,8 +34,9 @@ for k in range(0,nv.NEms):
         if DiffMatrix[-1] < nv.SSerror:
             print("Steady State Reached")
             
-            #nf.PlotSteadyStateTemp(PlotMatrix[-1])
+            #nf.PlotSteadyStateTemp(Wire_X,PlotMatrix[-1])
             #nf.PlotDiffMatrix(DiffMatrix)
+            #sys.exit()
 
             print("Tmax: "+str(np.max(Temp_after))+"    Tmean: "+str(np.mean(Temp_after))+"   Nsteps: "+str(m))
             

@@ -2,15 +2,15 @@ import MaterialClass as mc
 import numpy as np
 
 # 
-Intensity = 0.4484                  # [A]
-Voltage = 1.2732                    # [V]
+Intensity = 0.8579                  # [A]
+Voltage = 4.6256                    # [V]
 
-Expected_Temp = 538                 # [K]
+Expected_Temp = 956.188                 # [K]
 
 R = Voltage/Intensity
 
 # --------------------------- Wire Properties --------------- #
-Wire_Lenght = 5.0e-2                            # [m]
+Wire_Lenght = 4.0e-2                            # [m]
 Wire_Diameter = 0.2e-3                          # [m]
 Wire_N = 100                                    # [Number Wire Partitions]
 Wire_dx = Wire_Lenght/Wire_N
@@ -29,8 +29,8 @@ SSerror = 1e-3                      # Average of Diff(T_before - T_After). For k
 NEms = 10                        # Number Steps Emisiviti calculation. 
 Emserror = 1e-3                  # Error For emissivity Calculation.
 
-Tleft = 400                      # [K] Temperature Left side
-Tright = 400                     # [K] Temperature Right Side
+Tleft = 350                      # [K] Temperature Left side
+Tright = 350                     # [K] Temperature Right Side
 
 Material = mc.Material("MaterialFolder/Tungsten.txt")
 # ------------------------------------------------------------ #
