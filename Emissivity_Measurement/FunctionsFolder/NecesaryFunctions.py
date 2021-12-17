@@ -1,7 +1,9 @@
 from os import write
+import os
 import serial
 import serial.tools.list_ports
 import time
+import matplotlib.pyplot as plt
 
 ###################### Variables Dictionary #######################
 #                       ser.write(b'A')                           #      
@@ -42,8 +44,10 @@ def ADCConvert(ADC1, ADC2):
     print()
     V1 = (2 * ADC1 - ADCmax) * Vref /ADCmax
     V2 = -(2 * ADC2 - ADCmax) * Vref /ADCmax
+    #V1 = (ADC1) * Vref /ADCmax
+    #V2 = (ADC2) * Vref /ADCmax
     return V1, V2
-
+    
 
 # got this Readline from https://github.com/pyserial/pyserial/issues/216#issuecomment-369414522, so i guess it works faster??
 class ReadLine:
@@ -94,33 +98,34 @@ def MeasureADCZero(ser,foldername):
     # ------------------------------------------- Get ADC zero ------------------------------------ #
     #    Here we are measuring the wire voltage/current without putting a current on the wire       #
     #    There are 20 measurements of "zero" voltage                                                #
+    
+    #f = open(foldername+"ADCZero.txt","w+")
+    #f.write("  ---------- ADC Measurements at Zero Voltage.   ---------- \n")
+    #f.write("      V [V]       I [mA]     \n")
 
-    f = open(foldername+"ADCZero.txt","w+")
-    f.write("  ---------- ADC Measurements at Zero Voltage.   ---------- \n")
-    f.write("      V [V]       I [mA]     \n")
-
-    ser.write(b'A')
+    ser.write(b'S')
     Vzero = 0; Izero = 0
 
-    for i in range(20):
+    for i in range(100):
         message = ser.read(9)
+        ser.flushInput()
         msgIndex, ADC1, ADC2, temperature1, temperature2 = ADCDecode(message)
         V, I = ADCConvert(ADC1, ADC2)
+        print("Voltage: "+str(V)+"   Intensity: "+str(I))
 
-        f.write(str(round(V,5))+"       "+str(round(I,5))+"\n")
+        #f.write(str(round(V,5))+"       "+str(round(I,5))+"\n")
         Vzero += V; Izero += I
         print(msgIndex, ADC1, ADC2, temperature1, temperature2)
-        print (V,I)
 
     ser.write(b's')
 
-    Vzero /= 20; Izero /= 20
+    Vzero /= 100; Izero /= 100
 
-    print ("Vzero",Vzero,"Izero",Izero)
-    f.write("  ----------------------------------------------------------\n ")
-    f.write("Vzero = "+str(round(Vzero,5))+"       Izero = "+str(round(Izero,5))+"\n")
-    f.write("  ---------------------------------------------------------- \n")
-    f.close()
+    #print ("Vzero",Vzero,"Izero",Izero)
+    #f.write("  ----------------------------------------------------------\n ")
+    #f.write("Vzero = "+str(round(Vzero,5))+"       Izero = "+str(round(Izero,5))+"\n")
+    #f.write("  ---------------------------------------------------------- \n")
+    #f.close()
 
     time.sleep(1)
 
@@ -160,6 +165,7 @@ def MeasureR0(I0,Vzero, Izero, ser,foldername):
 
 def ReadMesage(Vzero,Izero,ser):
     message = ser.read(9)
+    ser.flushInput()
     msgIndex, ADC1, ADC2, temperature1, temperature2 = ADCDecode(message)
     
     print(msgIndex, ADC1, ADC2, temperature1, temperature2)
@@ -172,7 +178,7 @@ def ReadMesage(Vzero,Izero,ser):
     return V, I, R, temperature1, temperature2
 
 def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
-    Nmeas_SP1 = 1000; Nmeas_P1P0 = 50000; Nmeas_P0s = 5000
+    Nmeas_SP1 = 100; Nmeas_P1P0 = 500; Nmeas_P0s = 100
     vec_I, vec_V, vec_R, vec_T1, vec_T2 = [],[],[],[],[]
 
     print("    Measurement ON current OFF     ")
@@ -201,9 +207,18 @@ def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
     ser.write(b's')
     ser.close()
     print()
+
+    plt.figure()
+    plt.plot(vec_V)
+    plt.show()
+
+
     print("Writting file........")
 
-    f = open(foldername+"RMeas"+str(NumberMeas)+".txt","w+")
+
+    cwd = os.getcwd()
+    print(cwd)
+    f = open(cwd+"\Calibration\RMeas"+str(NumberMeas)+".txt","w+")
     f.write("  ---------- Measurements R  ---------- \n")
     f.write("      Vzero [V]    Vmeas [V]    V [V]    Izero[mA]     Imeas [mA]      I [mA]         R0 [Ohm]      T1[Np]      T2[Np]  \n")
 
@@ -212,6 +227,7 @@ def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
         f.write("      "+str(round(Izero,5))+"    "+str(round(vec_I[k],5))+"    "+str(round(vec_I[k]-Izero,5)) + "     "+str(round(vec_R[k],5))+ "     ")
         f.write(str(vec_T1[k])+"     "+str(vec_T2[k])+"\n")
     f.close()
+    
 
     print("FINISHED!")
 

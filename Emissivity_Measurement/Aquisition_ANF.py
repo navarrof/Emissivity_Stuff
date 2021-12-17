@@ -7,19 +7,18 @@ from FunctionsFolder import NecesaryFunctions as nf
 
 # ----------------------------------- Variables Set Ups ----------------------------------- #
 
-AdqRate = 1000                          # Adquisition Rate. Max. (1 Ac/100 us)
+AdqRate = 10000                          # Adquisition Rate. Cada AdqRate Una adquisicion. Max. (1 Ac/100 us)
 
 Flag_MeasureADCZero = "Yes"
-Flag_MeasureR0 = "No,310"                    # [mA] Ojo, max 300 mA
-Flag_MeasureR = "Yes,1680"                        # Current Already set in by source.
-OutputFolderName = "Emissivity_Measurement/OutputFiles/TungstenGold_NoVacuumCal/"
+#Flag_MeasureR0 = "No,310"                    # [mA] Ojo, max 300 mA
+Flag_MeasureR = "Yes,50"                        # Current Already set in by source.
+OutputFolderName = "Calibration/"
 
 import os
-os.chdir(os.path.dirname(os.getcwd()))
 print(os.getcwd())
 # ----------------------------- Set up Computer Micro-Controler Conection  ----------------------------- #
 
-COMPort = 'COM4'
+COMPort = 'COM5'
 serialBaudRate = 1152000
 serialInterCharTimeout = 100e-3 # 100us 
 
@@ -40,23 +39,27 @@ rl = nf.ReadLine(ser)
 
 nf.setADCRate(ser,AdqRate)
 
+Flag_MeasureR = "Yes,1100"                        # Current Already set in by source.
+ser.write(b'GV,2')
+print(ser.readline().decode())
+ser.write(b'GI,0')
+print(ser.readline().decode())
+ser.write(b'I100')
+print(ser.readline().decode())
 
-# ------------------------------- Measure Zero Current State ----------------------------- #
+time.sleep(2)
 
-nf.setVoffset(0,10,ser)
-nf.setVoffset(3,1250,ser)
+
+
+#nf.SetCurrent(300,ser) # [mA]
+
 
 if Flag_MeasureADCZero == "Yes":
     Vzero, Izero = nf.MeasureADCZero(ser,OutputFolderName)
 else: Vzero = 0.0; Izero = 0.0
 
-# -------------------------------- Measure R0  ------------------------------------- #
-if Flag_MeasureR0.split(",")[0] == "Yes":
-    V, I, R0 = nf.MeasureR0(float(Flag_MeasureR0.split(",")[1]), Vzero, Izero, ser,OutputFolderName)
-else: 
-    V = 0.0; I = 0.0; R0 = 0.0
-
+print("Vzero: "+str(Vzero)+"      Izero: "+str(Izero))
 # --------------------------------- Measure R --------------------------------------- #
 
 if Flag_MeasureR.split(",")[0] == "Yes":
-    nf.MeasureR_New(Vzero,Izero, ser, OutputFolderName,Flag_MeasureR.split(",")[1])
+    nf.MeasureR_New(Izero,Vzero, ser, OutputFolderName,Flag_MeasureR.split(",")[1])
