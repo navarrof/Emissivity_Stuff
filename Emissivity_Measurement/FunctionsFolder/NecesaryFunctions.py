@@ -133,35 +133,6 @@ def MeasureADCZero(ser,foldername):
     ser.flushOutput()
     return Vzero, Izero
 
-def MeasureR0(I0,Vzero, Izero, ser,foldername):
-    Nmeas = 50000
-    cmd = "M1,"
-    cmd += str(I0)
-
-    ser.write(bytearray(cmd.encode()))
-    f = open(foldername+"R0Meas_"+str(I0)+"mA.txt","w+")
-    f.write("  ---------- Measurements R0 at " + str(I0)+ " [mA]  ---------- \n")
-    f.write("      Vzero [V]    Vmeas [V]    V [V]    Izero[mA]     Imeas [mA]      I [mA]         R0 [Ohm]      T1[Np]      T2[Np]  \n")
-
-
-    print(ser.readline().decode())
-    for i in range(Nmeas):
-        message = ser.read(9)
-        msgIndex, ADC1, ADC2, temperature1, temperature2 = ADCDecode(message)
-        print(msgIndex, ADC1, ADC2, temperature1, temperature2)
-        V, I = ADCConvert(ADC1, ADC2)
-        R0 = round((V-Vzero)/(I-Izero), 5)
-        print ("V:", round(V-Vzero, 4), "I:", round(I-Izero, 4), "R0: ",  R0)
-        f.write(str(round(Vzero,5))+"      "+str(round(V,5))+"       "+str(round(V-Vzero,5)))
-        f.write("      "+str(round(Izero,5))+"    "+str(round(I,5))+"    "+str(round(I-Izero,5)) + "     "+str(round(R0,5))+ "     ")
-        f.write(str(temperature1)+"     "+str(temperature2)+"\n")
-    f.close()
-    ser.write(b'M0')
-    ser.write(b's')
-    ser.close()
-    print("Stopped")
-
-    return V, I, R0
 
 def ReadMesage(Vzero,Izero,ser):
     message = ser.read(9)
@@ -178,7 +149,7 @@ def ReadMesage(Vzero,Izero,ser):
     return V, I, R, temperature1, temperature2
 
 def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
-    Nmeas_SP1 = 100; Nmeas_P1P0 = 500; Nmeas_P0s = 100
+    Nmeas_SP1 = 100; Nmeas_P1P0 = 6000; Nmeas_P0s = 1000
     vec_I, vec_V, vec_R, vec_T1, vec_T2 = [],[],[],[],[]
 
     print("    Measurement ON current OFF     ")
@@ -208,7 +179,11 @@ def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
     ser.close()
     print()
 
-    plt.figure()
+    plt.figure(1)
+    plt.title("Intensity")
+    plt.plot(vec_I)
+    plt.figure(2)
+    plt.title("Voltage")
     plt.plot(vec_V)
     plt.show()
 
@@ -218,7 +193,7 @@ def MeasureR_New(Vzero,Izero,ser,foldername,NumberMeas):
 
     cwd = os.getcwd()
     print(cwd)
-    f = open(cwd+"\Calibration\RMeas"+str(NumberMeas)+".txt","w+")
+    f = open(cwd+"\RMeas"+str(NumberMeas)+".txt","w+")
     f.write("  ---------- Measurements R  ---------- \n")
     f.write("      Vzero [V]    Vmeas [V]    V [V]    Izero[mA]     Imeas [mA]      I [mA]         R0 [Ohm]      T1[Np]      T2[Np]  \n")
 

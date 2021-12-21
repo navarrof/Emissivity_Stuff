@@ -39,12 +39,12 @@ rl = nf.ReadLine(ser)
 
 nf.setADCRate(ser,AdqRate)
 
-Flag_MeasureR = "Yes,1100"                        # Current Already set in by source.
-ser.write(b'GV,2')
+Flag_MeasureR = "Yes,250"                        # Current Already set in by source.
+ser.write(b'GV,1')
 print(ser.readline().decode())
-ser.write(b'GI,0')
+ser.write(b'GI,1')
 print(ser.readline().decode())
-ser.write(b'I100')
+ser.write(b'I250')
 print(ser.readline().decode())
 
 time.sleep(2)
