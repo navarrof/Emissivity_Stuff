@@ -1,6 +1,9 @@
+from matplotlib.collections import PolyCollection
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from numpy.lib.financial import ppmt
+from scipy.optimize import curve_fit
 
 def Cal_GV0(vadc): return 1./0.43219*(vadc - 0.012721)
 def Cal_GV1(vadc): return 1./0.885568*(vadc - 0.05580)
@@ -8,6 +11,7 @@ def Cal_GV2(vadc): return 1./1.7285*(vadc - 0.07591)
 def Cal_GI0(iadc): return 1./1.03126*(iadc + 0.00465)
 def Cal_GI1(iadc): return 1./1.80851*(iadc - 0.00279826)
 
+def R0_func(I,A,B): return A+B*I**2
 
 def ReadSummaryFile(filename):
     f = open(filename)
@@ -73,6 +77,61 @@ def Plot_Summary_CalVSNoCal(V_nam, V_av, V_std, I_av, I_std, R_av, R_std,Inew,Vn
     plt.tight_layout()
     plt.show()
 
+def Calculate_R0_Plot(I,V,R):
+
+    popt,pcov = curve_fit(R0_func,I[5:15],R[5:15])
+    yfit = R0_func(I,popt[0],popt[1])
+    cname = "R = "+ str(round(popt[0],3))+" + "+str(round(popt[1],3))+" I^2"
+    fig, axs = plt.subplots(1, 1,figsize=(5,5))
+    axs.set_title("Resistance Measurement",fontsize=14)
+    axs.errorbar(I,R,xerr=None,marker = "s", ls="None", color="black",label= "Measured R")
+    axs.errorbar(I[5:15],R[5:15],xerr=None,marker = "s", ls="None", color="darkred",label= "Points for R0")
+    axs.errorbar(I,yfit,xerr=None, ls="dashed", color="indianred",lw=3,label=cname)
+    axs.legend(fontsize=12)
+    axs.tick_params(axis='both', which='major', labelsize=14)
+    axs.set_xlabel("Measured I [mA]",fontsize=14)
+    axs.set_ylabel("Measured R [Ohm]",fontsize=14)
+    plt.tight_layout()
+
+    fig2, axs2 = plt.subplots(1, 1,figsize=(5,5))
+    axs2.set_title("Resistance Measurement",fontsize=14)
+    axs2.errorbar(I,R/popt[0],xerr=None,marker = "s", ls="None", color="black",label= "Measured R")
+    #axs2.legend(fontsize=12)
+    axs2.tick_params(axis='both', which='major', labelsize=14)
+    axs2.set_xlabel("Measured I [mA]",fontsize=14)
+    axs2.set_ylabel(" R/R0 ",fontsize=14)
+
+    plt.show()
+
+    return popt[0]
+
+def Read_ResT(filename):
+    f = open(filename);  T, Res = [],[]
+    for cont,l in enumerate(f,start=0):
+        asd = l.split("\t")
+        if cont > 1: 
+            T += [float(asd[0])]; Res += [float(asd[2].split("\n")[0])]
+            
+    return T, Res
+
+def Calculate_IT_Plot(Imeas,Rmeas, R0, theofile):
+    T, Rtheo = Read_ResT(theofile)
+
+    #      Res(T) = a*T^2+b*T+c
+    a = 3.65e-7; b = 4.77e-3; d = 5.862e-2
+    vT = []
+    for R in Rmeas: 
+        print(R)
+        c = d - R/R0
+        print(R/R0)
+        vT += [(-b+np.sqrt(b**2-4*a*c))/(2*a)]
+
+
+    fig, axs = plt.subplots(1,1,constrained_layout = True, figsize=(6,6))
+    axs.scatter(Imeas,vT,color="red",lw=3)
+    axs.set_xlabel("Intensity [A]",fontsize=14)
+    axs.set_ylabel("Temperature [K]",fontsize=14)
+    plt.show()
 # ---------------------------------------------------------------- # 
 
 cwd = os.getcwd()
@@ -82,3 +141,7 @@ Inew, Vnew, Rnew = AppyCalibration(V_name, V_av, I_av, Cal_I, Cal_V)
 
 Plot_Summary_CalVSNoCal( V_name, V_av, V_std, I_av, I_std, R_av, R_st,Inew,Vnew,Rnew)
 
+#R0 = Calculate_R0_Plot(Inew,Vnew,Rnew)
+
+#theofile = cwd+"/Emissivity_Analysis/Tungsten_Res(T).txt"
+#Calculate_IT_Plot(Inew,Rnew,R0,theofile)

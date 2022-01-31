@@ -86,14 +86,14 @@ def CalculateAverageToFile(Start, End, V,I,R,filename,filename_toWrite, CalCircu
 
 # ------------------------------------------------------------------ #
 cwd = os.getcwd()
-filename = cwd + "/NonVacuumData/WAu_100um/RMeas250.txt"
+filename = cwd + "/NonVacuumData/WAu_100um/RMeasGV1GI0_1200.txt"
 Time, V, I, R = Read_AdcFile(filename,10e-3)
 
-Start = 3000; End = 6000
+Start = 15000; End = 30000
 #Start = 2000; End = 5000
 Plot_AdcFile(Start, End, Time, V, I, R,filename)
 
 filename_toWrite = cwd+"/NonVacuumData/WAu_100um/FolderSummary.txt"
 
-CalCircuit_V = 1; CalCircuit_I = 1
+CalCircuit_V = 1; CalCircuit_I = 0
 CalculateAverageToFile(Start,End,V,I,R,filename,filename_toWrite, CalCircuit_V, CalCircuit_I)

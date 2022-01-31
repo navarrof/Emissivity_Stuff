@@ -12,7 +12,7 @@ AdqRate = 10000                          # Adquisition Rate. Cada AdqRate Una ad
 Flag_MeasureADCZero = "Yes"
 #Flag_MeasureR0 = "No,310"                    # [mA] Ojo, max 300 mA
 Flag_MeasureR = "Yes,50"                        # Current Already set in by source.
-OutputFolderName = "Calibration/"
+OutputFolderName = "NonVacuumData/WAu_100um/"
 
 import os
 print(os.getcwd())
@@ -39,15 +39,16 @@ rl = nf.ReadLine(ser)
 
 nf.setADCRate(ser,AdqRate)
 
-Flag_MeasureR = "Yes,250"                        # Current Already set in by source.
+Flag_MeasureR = "Yes,CT_1250"                        # Current Already set in by source.
 ser.write(b'GV,1')
 print(ser.readline().decode())
-ser.write(b'GI,1')
+ser.write(b'GI,0')
 print(ser.readline().decode())
-ser.write(b'I250')
+ser.write(b'I1000')
 print(ser.readline().decode())
 
 time.sleep(2)
+
 
 
 
